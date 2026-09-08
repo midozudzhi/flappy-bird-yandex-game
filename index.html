@@ -8,27 +8,143 @@
 </head>
 <body>
     <div class="game-container">
-        <div class="header">
-            <h1>Flappy Bird</h1>
-            <div class="score-board">
-                <div class="score">
-                    <span class="score-label">Очки:</span>
-                    <span class="score-value" id="score">0</span>
+        <!-- Главное меню -->
+        <div class="main-menu" id="mainMenu">
+            <div class="menu-content">
+                <h1 class="game-title">Flappy Bird</h1>
+                <p class="game-subtitle">Яндекс Игры</p>
+                
+                <div class="menu-buttons">
+                    <button class="menu-button play-button" id="playButton">
+                        <span class="button-icon">▶</span>
+                        Играть
+                    </button>
+                    <button class="menu-button achievements-button" id="achievementsButton">
+                        <span class="button-icon">🏆</span>
+                        Достижения
+                    </button>
+                    <button class="menu-button skins-button" id="skinsButton">
+                        <span class="button-icon">🎨</span>
+                        Скины
+                    </button>
                 </div>
             </div>
         </div>
-        
-        <canvas id="gameCanvas" width="400" height="600"></canvas>
-        
-        <div class="controls">
-            <p class="controls-text">Нажми ПРОБЕЛ, кликни мышью или коснись экрана чтобы начать и прыгать</p>
+
+        <!-- Экран игры -->
+        <div class="game-view" id="gameView" style="display: none;">
+            <div class="header">
+                <div class="back-button" id="backButton">← Назад</div>
+                <h1>Flappy Bird</h1>
+                <div class="score-board">
+                    <div class="score">
+                        <span class="score-label">Очки:</span>
+                        <span class="score-value" id="score">0</span>
+                    </div>
+                </div>
+            </div>
+            
+            <canvas id="gameCanvas" width="400" height="600"></canvas>
+            
+            <div class="controls">
+                <p class="controls-text">Нажми ПРОБЕЛ, кликни мышью или коснись экрана чтобы начать и прыгать</p>
+            </div>
+            
+            <div class="game-over-screen" id="gameOverScreen" style="display: none;">
+                <div class="game-over-content">
+                    <h2>Игра закончена</h2>
+                    <p class="final-score">Финальный счет: <span id="finalScore">0</span></p>
+                    <button class="restart-button" id="restartButton">Играть снова</button>
+                    <button class="menu-button" id="exitButton">В меню</button>
+                </div>
+            </div>
         </div>
-        
-        <div class="game-over-screen" id="gameOverScreen" style="display: none;">
-            <div class="game-over-content">
-                <h2>Игра закончена</h2>
-                <p class="final-score">Финальный счет: <span id="finalScore">0</span></p>
-                <button class="restart-button" id="restartButton">Играть снова</button>
+
+        <!-- Экран достижений -->
+        <div class="achievements-view" id="achievementsView" style="display: none;">
+            <div class="modal-header">
+                <button class="close-button" id="closeAchievements">← Назад</button>
+                <h2>Достижения</h2>
+            </div>
+            
+            <div class="achievements-list">
+                <div class="achievement-item">
+                    <div class="achievement-icon">🌟</div>
+                    <div class="achievement-info">
+                        <h3>Первый полет</h3>
+                        <p>Набрать 5 очков</p>
+                    </div>
+                    <div class="achievement-status" id="ach1">Заблокировано</div>
+                </div>
+                
+                <div class="achievement-item">
+                    <div class="achievement-icon">⭐</div>
+                    <div class="achievement-info">
+                        <h3>Опытный пилот</h3>
+                        <p>Набрать 10 очков</p>
+                    </div>
+                    <div class="achievement-status" id="ach2">Заблокировано</div>
+                </div>
+                
+                <div class="achievement-item">
+                    <div class="achievement-icon">✨</div>
+                    <div class="achievement-info">
+                        <h3>Мастер неба</h3>
+                        <p>Набрать 25 очков</p>
+                    </div>
+                    <div class="achievement-status" id="ach3">Заблокировано</div>
+                </div>
+                
+                <div class="achievement-item">
+                    <div class="achievement-icon">👑</div>
+                    <div class="achievement-info">
+                        <h3>Легенда</h3>
+                        <p>Набрать 50 очков</p>
+                    </div>
+                    <div class="achievement-status" id="ach4">Заблокировано</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Экран скинов -->
+        <div class="skins-view" id="skinsView" style="display: none;">
+            <div class="modal-header">
+                <button class="close-button" id="closeSkins">← Назад</button>
+                <h2>Скины</h2>
+            </div>
+            
+            <div class="skins-list">
+                <div class="skin-item selected">
+                    <div class="skin-preview yellow-bird">🐤</div>
+                    <div class="skin-info">
+                        <h3>Жёлтая птица</h3>
+                        <p class="skin-status">Активна</p>
+                    </div>
+                </div>
+                
+                <div class="skin-item">
+                    <div class="skin-preview red-bird">🐤</div>
+                    <div class="skin-info">
+                        <h3>Красная птица</h3>
+                        <button class="skin-button">Выбрать</button>
+                    </div>
+                </div>
+                
+                <div class="skin-item">
+                    <div class="skin-preview blue-bird">🐤</div>
+                    <div class="skin-info">
+                        <h3>Голубая птица</h3>
+                        <button class="skin-button">Выбрать</button>
+                    </div>
+                </div>
+                
+                <div class="skin-item">
+                    <div class="skin-preview purple-bird">🐤</div>
+                    <div class="skin-info">
+                        <h3>Фиолетовая птица</h3>
+                        <button class="skin-button">Выбрать</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

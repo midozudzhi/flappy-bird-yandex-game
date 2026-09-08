@@ -48,18 +48,183 @@ let gameState = {
     pipes: [],
     nextPipeId: 0,
     frameCount: 0,
-    lastPipeDistance: 0
+    lastPipeDistance: 0,
+    currentSkin: 'yellow',
+    maxScore: localStorage.getItem('maxScore') ? parseInt(localStorage.getItem('maxScore')) : 0,
+    achievements: {
+        ach1: localStorage.getItem('ach1') ? JSON.parse(localStorage.getItem('ach1')) : false,
+        ach2: localStorage.getItem('ach2') ? JSON.parse(localStorage.getItem('ach2')) : false,
+        ach3: localStorage.getItem('ach3') ? JSON.parse(localStorage.getItem('ach3')) : false,
+        ach4: localStorage.getItem('ach4') ? JSON.parse(localStorage.getItem('ach4')) : false
+    }
 };
 
 // ========== ПОЛУЧЕНИЕ ЭЛЕМЕНТОВ DOM ==========
+// Меню
+const mainMenu = document.getElementById('mainMenu');
+const playButton = document.getElementById('playButton');
+const achievementsButton = document.getElementById('achievementsButton');
+const skinsButton = document.getElementById('skinsButton');
+
+// Игра
+const gameView = document.getElementById('gameView');
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const scoreDisplay = document.getElementById('score');
 const gameOverScreen = document.getElementById('gameOverScreen');
 const finalScoreDisplay = document.getElementById('finalScore');
 const restartButton = document.getElementById('restartButton');
+const exitButton = document.getElementById('exitButton');
+const backButton = document.getElementById('backButton');
 
-// ========== СОБЫТИЯ УПРАВЛЕНИЯ ==========
+// Достижения
+const achievementsView = document.getElementById('achievementsView');
+const closeAchievements = document.getElementById('closeAchievements');
+
+// Скины
+const skinsView = document.getElementById('skinsView');
+const closeSkins = document.getElementById('closeSkins');
+const skinButtons = document.querySelectorAll('.skin-button');
+
+// ========== СОБЫТИЯ МЕНЮ ==========
+playButton.addEventListener('click', startGame);
+achievementsButton.addEventListener('click', showAchievements);
+skinsButton.addEventListener('click', showSkins);
+backButton.addEventListener('click', backToMenu);
+closeAchievements.addEventListener('click', backToMenu);
+closeSkins.addEventListener('click', backToMenu);
+exitButton.addEventListener('click', backToMenu);
+
+// Обработчики для выбора скинов
+skinButtons.forEach((button, index) => {
+    button.addEventListener('click', (e) => {
+        e.stopPropagation();
+        selectSkin(index + 1);
+    });
+});
+
+// ========== ФУНКЦИИ НАВИГАЦИИ ==========
+function startGame() {
+    mainMenu.style.display = 'none';
+    gameView.style.display = 'block';
+    resetGame();
+    gameState.isRunning = true;
+}
+
+function backToMenu() {
+    gameView.style.display = 'none';
+    achievementsView.style.display = 'none';
+    skinsView.style.display = 'none';
+    mainMenu.style.display = 'flex';
+    gameState.isRunning = false;
+    gameOverScreen.style.display = 'none';
+}
+
+function showAchievements() {
+    mainMenu.style.display = 'none';
+    achievementsView.style.display = 'block';
+    updateAchievementsDisplay();
+}
+
+function showSkins() {
+    mainMenu.style.display = 'none';
+    skinsView.style.display = 'block';
+    updateSkinsDisplay();
+}
+
+// ========== ФУНКЦИИ ДОСТИЖЕНИЙ ==========
+function updateAchievementsDisplay() {
+    const achievements = [
+        { id: 'ach1', score: 5 },
+        { id: 'ach2', score: 10 },
+        { id: 'ach3', score: 25 },
+        { id: 'ach4', score: 50 }
+    ];
+
+    achievements.forEach(ach => {
+        const element = document.getElementById(ach.id);
+        if (gameState.achievements[ach.id]) {
+            element.textContent = 'Получено ✓';
+            element.classList.add('unlocked');
+            element.style.background = 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)';
+            element.style.color = 'white';
+        } else {
+            element.textContent = 'Заблокировано';
+            element.classList.remove('unlocked');
+        }
+    });
+}
+
+function checkAchievements() {
+    if (gameState.score >= 5 && !gameState.achievements.ach1) {
+        gameState.achievements.ach1 = true;
+        localStorage.setItem('ach1', JSON.stringify(true));
+    }
+    if (gameState.score >= 10 && !gameState.achievements.ach2) {
+        gameState.achievements.ach2 = true;
+        localStorage.setItem('ach2', JSON.stringify(true));
+    }
+    if (gameState.score >= 25 && !gameState.achievements.ach3) {
+        gameState.achievements.ach3 = true;
+        localStorage.setItem('ach3', JSON.stringify(true));
+    }
+    if (gameState.score >= 50 && !gameState.achievements.ach4) {
+        gameState.achievements.ach4 = true;
+        localStorage.setItem('ach4', JSON.stringify(true));
+    }
+}
+
+// ========== ФУНКЦИИ СКИНОВ ==========
+function updateSkinsDisplay() {
+    const skinItems = document.querySelectorAll('.skin-item');
+    skinItems.forEach((item, index) => {
+        if (index === 0) {
+            if (gameState.currentSkin === 'yellow') {
+                item.classList.add('selected');
+                item.querySelector('.skin-status').textContent = 'Активна';
+            } else {
+                item.classList.remove('selected');
+                item.querySelector('.skin-status').textContent = '';
+            }
+        } else {
+            item.classList.remove('selected');
+        }
+    });
+}
+
+function selectSkin(skinIndex) {
+    const skins = ['yellow', 'red', 'blue', 'purple'];
+    gameState.currentSkin = skins[skinIndex - 1];
+    localStorage.setItem('currentSkin', gameState.currentSkin);
+    
+    // Обновляем UI
+    const skinItems = document.querySelectorAll('.skin-item');
+    skinItems.forEach((item, index) => {
+        if (index === skinIndex - 1) {
+            item.classList.add('selected');
+            const statusElement = item.querySelector('.skin-status');
+            if (statusElement) {
+                statusElement.textContent = 'Активна';
+            } else {
+                const info = item.querySelector('.skin-info');
+                const status = document.createElement('p');
+                status.className = 'skin-status';
+                status.textContent = 'Активна';
+                info.appendChild(status);
+            }
+            const button = item.querySelector('.skin-button');
+            if (button) button.style.display = 'none';
+        } else {
+            item.classList.remove('selected');
+            const statusElement = item.querySelector('.skin-status');
+            if (statusElement) statusElement.remove();
+            const button = item.querySelector('.skin-button');
+            if (button) button.style.display = 'block';
+        }
+    });
+}
+
+// ========== СОБЫТИЯ УПРАВЛЕНИЯ ИГРОЙ ==========
 // Управление мышью и сенсорным экраном
 document.addEventListener('click', handleFlap);
 document.addEventListener('touchstart', handleFlap);
@@ -68,20 +233,30 @@ canvas.addEventListener('touchstart', handleFlap);
 
 // Управление клавиатурой (пробел)
 document.addEventListener('keydown', function(event) {
-    if (event.code === 'Space') {
+    if (event.code === 'Space' && gameView.style.display !== 'none') {
         event.preventDefault();
         handleFlap();
     }
 });
 
 // Кнопка "Играть снова"
-restartButton.addEventListener('click', restartGame);
+restartButton.addEventListener('click', function() {
+    gameOverScreen.style.display = 'none';
+    resetGame();
+    gameState.isRunning = true;
+});
 
 /**
  * Обработчик прыжка птицы
  */
 function handleFlap(e) {
-    if (e) {
+    if (e && e.preventDefault) {
+        // Не прерываем события в меню
+        if (mainMenu.style.display !== 'none' || 
+            achievementsView.style.display !== 'none' || 
+            skinsView.style.display !== 'none') {
+            return;
+        }
         e.preventDefault();
     }
     
@@ -89,7 +264,7 @@ function handleFlap(e) {
         return; // Игра закончена, ждем перезапуска
     }
     
-    if (!gameState.isRunning) {
+    if (!gameState.isRunning || gameView.style.display === 'none') {
         return;
     }
     
@@ -117,6 +292,9 @@ function update() {
     
     // Обновление счета
     updateScore();
+    
+    // Проверка достижений
+    checkAchievements();
 }
 
 /**
@@ -243,7 +421,13 @@ function updateScore() {
                 gameState.score++;
                 scoreDisplay.textContent = gameState.score;
                 
-                // TODO: Интеграция с Яндекс Играми
+                // Обновляем максимальный счет
+                if (gameState.score > gameState.maxScore) {
+                    gameState.maxScore = gameState.score;
+                    localStorage.setItem('maxScore', gameState.maxScore);
+                }
+                
+                // TODO: Ин��еграция с Яндекс Играми
                 // window.YaGame.submitScore(gameState.score);
             }
         }
@@ -256,7 +440,6 @@ function updateScore() {
  */
 function draw() {
     // Очистка canvas
-    ctx.fillStyle = 'linear-gradient-to-bottom, #87CEEB 0%, #E0F6FF 100%';
     ctx.clearRect(0, 0, CONFIG.canvasWidth, CONFIG.canvasHeight);
     
     // Рисование фона (небо)
@@ -325,6 +508,31 @@ function drawGround() {
 function drawBird() {
     const bird = gameState.bird;
     
+    // Выбор цвета в зависимости от скина
+    let bodyColor, wingColor, beakColor;
+    
+    switch(gameState.currentSkin) {
+        case 'red':
+            bodyColor = '#FF4444';
+            wingColor = '#CC0000';
+            beakColor = '#FF6B6B';
+            break;
+        case 'blue':
+            bodyColor = '#4488FF';
+            wingColor = '#0055CC';
+            beakColor = '#66B3FF';
+            break;
+        case 'purple':
+            bodyColor = '#AA44FF';
+            wingColor = '#7700DD';
+            beakColor = '#CC88FF';
+            break;
+        default: // yellow
+            bodyColor = '#FFD700';
+            wingColor = '#FFA500';
+            beakColor = '#FF6B6B';
+    }
+    
     // Угол поворота в зависимости от скорости падения
     const angle = Math.min(Math.max(bird.velocityY / 10, -0.5), 0.5);
     
@@ -333,11 +541,11 @@ function drawBird() {
     ctx.rotate(angle);
     
     // Тело
-    ctx.fillStyle = '#FFD700';
+    ctx.fillStyle = bodyColor;
     ctx.fillRect(-CONFIG.bird.width / 2, -CONFIG.bird.height / 2, CONFIG.bird.width, CONFIG.bird.height);
     
     // Крыло
-    ctx.fillStyle = '#FFA500';
+    ctx.fillStyle = wingColor;
     ctx.fillRect(-CONFIG.bird.width / 4, -CONFIG.bird.height / 3, CONFIG.bird.width / 3, CONFIG.bird.height / 6);
     
     // Глаз
@@ -352,7 +560,7 @@ function drawBird() {
     ctx.fill();
     
     // Клюв
-    ctx.fillStyle = '#FF6B6B';
+    ctx.fillStyle = beakColor;
     ctx.beginPath();
     ctx.moveTo(CONFIG.bird.width / 3, -CONFIG.bird.height / 8);
     ctx.lineTo(CONFIG.bird.width / 3 + 8, -CONFIG.bird.height / 8);
@@ -392,6 +600,9 @@ function endGame() {
     gameOverScreen.style.display = 'flex';
     finalScoreDisplay.textContent = gameState.score;
     
+    // Проверяем достижения перед завершением
+    checkAchievements();
+    
     // TODO: Интеграция с Яндекс Играми
     // window.YaGame.save({ score: gameState.score });
     // window.YaGame.showAd(() => {
@@ -402,7 +613,7 @@ function endGame() {
 /**
  * Перезапуск игры
  */
-function restartGame() {
+function resetGame() {
     gameState = {
         isRunning: true,
         isPaused: false,
@@ -416,7 +627,10 @@ function restartGame() {
         pipes: [],
         nextPipeId: 0,
         frameCount: 0,
-        lastPipeDistance: CONFIG.pipes.distance - 100
+        lastPipeDistance: CONFIG.pipes.distance - 100,
+        currentSkin: localStorage.getItem('currentSkin') || 'yellow',
+        maxScore: gameState.maxScore,
+        achievements: gameState.achievements
     };
     
     scoreDisplay.textContent = '0';
@@ -453,6 +667,12 @@ function gameLoop(currentTime) {
 function init() {
     console.log('Flappy Bird Game Initialized');
     console.log('Canvas size:', CONFIG.canvasWidth, 'x', CONFIG.canvasHeight);
+    
+    // Загружаем сохраненный скин
+    const savedSkin = localStorage.getItem('currentSkin');
+    if (savedSkin) {
+        gameState.currentSkin = savedSkin;
+    }
     
     // Начинаем игровой цикл
     requestAnimationFrame(gameLoop);
