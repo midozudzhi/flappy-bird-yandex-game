@@ -1,0 +1,251 @@
+/* ========================================
+   Flappy Bird - Стили CSS
+   ======================================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    overflow: hidden;
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: #f0f0f0;
+    border-radius: 10px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    max-width: 500px;
+    width: 100%;
+}
+
+/* Заголовок */
+.header {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.header h1 {
+    font-size: 2.5em;
+    color: #333;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+}
+
+/* Таблица очков */
+.score-board {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    font-size: 1.3em;
+    color: #555;
+}
+
+.score {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    padding: 8px 15px;
+    border-radius: 5px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.score-label {
+    font-weight: bold;
+}
+
+.score-value {
+    color: #667eea;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+/* Canvas */
+#gameCanvas {
+    display: block;
+    background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 100%);
+    border: 3px solid #333;
+    border-radius: 5px;
+    margin: 15px 0;
+    max-width: 100%;
+    height: auto;
+    cursor: pointer;
+}
+
+/* Элементы управления */
+.controls {
+    text-align: center;
+    color: #666;
+    font-size: 0.9em;
+    margin-top: 10px;
+}
+
+.controls-text {
+    font-style: italic;
+}
+
+/* Экран Game Over */
+.game-over-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.game-over-content {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.game-over-content h2 {
+    font-size: 2em;
+    color: #e74c3c;
+    margin-bottom: 15px;
+}
+
+.final-score {
+    font-size: 1.3em;
+    color: #333;
+    margin-bottom: 25px;
+    font-weight: bold;
+}
+
+.final-score span {
+    color: #667eea;
+    font-size: 1.3em;
+}
+
+.restart-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    font-size: 1.1em;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.restart-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.restart-button:active {
+    transform: translateY(0);
+}
+
+/* Адаптивный дизайн для мобильных устройств */
+@media (max-width: 600px) {
+    .game-container {
+        padding: 15px;
+        border-radius: 8px;
+    }
+
+    .header h1 {
+        font-size: 2em;
+    }
+
+    #gameCanvas {
+        border-width: 2px;
+    }
+
+    .game-over-content {
+        padding: 30px 20px;
+    }
+
+    .game-over-content h2 {
+        font-size: 1.7em;
+    }
+
+    .restart-button {
+        padding: 12px 30px;
+        font-size: 1em;
+    }
+
+    .controls-text {
+        font-size: 0.8em;
+    }
+}
+
+@media (max-width: 400px) {
+    .game-container {
+        padding: 10px;
+    }
+
+    .header h1 {
+        font-size: 1.5em;
+        margin-bottom: 5px;
+    }
+
+    .score-board {
+        gap: 10px;
+        font-size: 1.1em;
+    }
+
+    .score {
+        padding: 6px 10px;
+    }
+
+    #gameCanvas {
+        margin: 10px 0;
+    }
+
+    .game-over-content {
+        padding: 20px 15px;
+    }
+
+    .game-over-content h2 {
+        font-size: 1.4em;
+    }
+
+    .final-score {
+        font-size: 1.1em;
+    }
+}
