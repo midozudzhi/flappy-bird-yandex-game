@@ -14,6 +14,12 @@
                 <h1 class="game-title">Flappy Bird</h1>
                 <p class="game-subtitle">Яндекс Игры</p>
                 
+                <!-- Дисплей кристаллов в меню -->
+                <div class="crystals-bar">
+                    <span class="crystals-icon">💎</span>
+                    <span class="crystals-count" id="crystalsDisplay">0</span>
+                </div>
+                
                 <div class="menu-buttons">
                     <button class="menu-button play-button" id="playButton">
                         <span class="button-icon">▶</span>
@@ -25,7 +31,7 @@
                     </button>
                     <button class="menu-button skins-button" id="skinsButton">
                         <span class="button-icon">🎨</span>
-                        Скины
+                        Скины и Темы
                     </button>
                 </div>
             </div>
@@ -75,6 +81,7 @@
                         <p>Набрать 5 очков</p>
                     </div>
                     <div class="achievement-status" id="ach1">Заблокировано</div>
+                    <div class="achievement-reward" id="ach1-reward" style="display: none;">+10 💎</div>
                 </div>
                 
                 <div class="achievement-item">
@@ -84,6 +91,7 @@
                         <p>Набрать 10 очков</p>
                     </div>
                     <div class="achievement-status" id="ach2">Заблокировано</div>
+                    <div class="achievement-reward" id="ach2-reward" style="display: none;">+25 💎</div>
                 </div>
                 
                 <div class="achievement-item">
@@ -93,6 +101,7 @@
                         <p>Набрать 25 очков</p>
                     </div>
                     <div class="achievement-status" id="ach3">Заблокировано</div>
+                    <div class="achievement-reward" id="ach3-reward" style="display: none;">+50 💎</div>
                 </div>
                 
                 <div class="achievement-item">
@@ -102,49 +111,24 @@
                         <p>Набрать 50 очков</p>
                     </div>
                     <div class="achievement-status" id="ach4">Заблокировано</div>
+                    <div class="achievement-reward" id="ach4-reward" style="display: none;">+100 💎</div>
                 </div>
             </div>
         </div>
 
-        <!-- Экран скинов -->
+        <!-- Экран скинов и тем -->
         <div class="skins-view" id="skinsView" style="display: none;">
             <div class="modal-header">
                 <button class="close-button" id="closeSkins">← Назад</button>
-                <h2>Скины</h2>
+                <h2>Скины и Темы</h2>
+                <div class="modal-crystals">
+                    <span class="crystals-icon">💎</span>
+                    <span id="modalCrystalsCount">0</span>
+                </div>
             </div>
             
-            <div class="skins-list">
-                <div class="skin-item selected">
-                    <div class="skin-preview yellow-bird">🐤</div>
-                    <div class="skin-info">
-                        <h3>Жёлтая птица</h3>
-                        <p class="skin-status">Активна</p>
-                    </div>
-                </div>
-                
-                <div class="skin-item">
-                    <div class="skin-preview red-bird">🐤</div>
-                    <div class="skin-info">
-                        <h3>Красная птица</h3>
-                        <button class="skin-button">Выбрать</button>
-                    </div>
-                </div>
-                
-                <div class="skin-item">
-                    <div class="skin-preview blue-bird">🐤</div>
-                    <div class="skin-info">
-                        <h3>Голубая птица</h3>
-                        <button class="skin-button">Выбрать</button>
-                    </div>
-                </div>
-                
-                <div class="skin-item">
-                    <div class="skin-preview purple-bird">🐤</div>
-                    <div class="skin-info">
-                        <h3>Фиолетовая птица</h3>
-                        <button class="skin-button">Выбрать</button>
-                    </div>
-                </div>
+            <div class="skins-list" id="skinsContainer">
+                <!-- Динамически заполняется JavaScript -->
             </div>
         </div>
     </div>
@@ -174,6 +158,19 @@
             }
         };
     </script>
+
+    <style>
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translate(-50%, 0);
+            }
+            100% {
+                opacity: 0;
+                transform: translate(-50%, -100px);
+            }
+        }
+    </style>
 
     <script src="script.js"></script>
 </body>
