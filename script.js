@@ -34,6 +34,73 @@ const CONFIG = {
     fps: 60
 };
 
+// ========== КОНФИГУРАЦИЯ ТЕМ И ДОСТИЖЕНИЙ ==========
+const THEMES = {
+    yellow: {
+        name: 'Жёлтая птица',
+        cost: 0,
+        unlocked: true,
+        sky: '#87CEEB',
+        ground: '#2d8659',
+        groundLine: '#1a5033'
+    },
+    red: {
+        name: 'Красная птица',
+        cost: 0,
+        unlocked: true,
+        sky: '#87CEEB',
+        ground: '#2d8659',
+        groundLine: '#1a5033'
+    },
+    blue: {
+        name: 'Голубая птица',
+        cost: 0,
+        unlocked: true,
+        sky: '#87CEEB',
+        ground: '#2d8659',
+        groundLine: '#1a5033'
+    },
+    purple: {
+        name: 'Фиолетовая птица',
+        cost: 0,
+        unlocked: true,
+        sky: '#87CEEB',
+        ground: '#2d8659',
+        groundLine: '#1a5033'
+    },
+    desert: {
+        name: 'Пустыня',
+        cost: 50,
+        unlocked: false,
+        sky: '#FFD700',
+        ground: '#D4A574',
+        groundLine: '#B8860B'
+    },
+    jungle: {
+        name: 'Джунгли',
+        cost: 75,
+        unlocked: false,
+        sky: '#90EE90',
+        ground: '#228B22',
+        groundLine: '#0B6623'
+    },
+    ocean: {
+        name: 'Море',
+        cost: 100,
+        unlocked: false,
+        sky: '#4A90E2',
+        ground: '#1E90FF',
+        groundLine: '#000080'
+    }
+};
+
+const ACHIEVEMENTS = {
+    ach1: { id: 'ach1', score: 5, reward: 10 },
+    ach2: { id: 'ach2', score: 10, reward: 25 },
+    ach3: { id: 'ach3', score: 25, reward: 50 },
+    ach4: { id: 'ach4', score: 50, reward: 100 }
+};
+
 // ========== ПЕРЕМЕННЫЕ СОСТОЯНИЯ ==========
 let gameState = {
     isRunning: true,
@@ -50,12 +117,23 @@ let gameState = {
     frameCount: 0,
     lastPipeDistance: 0,
     currentSkin: 'yellow',
+    currentTheme: 'yellow',
     maxScore: localStorage.getItem('maxScore') ? parseInt(localStorage.getItem('maxScore')) : 0,
+    crystals: localStorage.getItem('crystals') ? parseInt(localStorage.getItem('crystals')) : 0,
     achievements: {
         ach1: localStorage.getItem('ach1') ? JSON.parse(localStorage.getItem('ach1')) : false,
         ach2: localStorage.getItem('ach2') ? JSON.parse(localStorage.getItem('ach2')) : false,
         ach3: localStorage.getItem('ach3') ? JSON.parse(localStorage.getItem('ach3')) : false,
         ach4: localStorage.getItem('ach4') ? JSON.parse(localStorage.getItem('ach4')) : false
+    },
+    unlockedThemes: {
+        yellow: true,
+        red: true,
+        blue: true,
+        purple: true,
+        desert: localStorage.getItem('theme_desert') ? JSON.parse(localStorage.getItem('theme_desert')) : false,
+        jungle: localStorage.getItem('theme_jungle') ? JSON.parse(localStorage.getItem('theme_jungle')) : false,
+        ocean: localStorage.getItem('theme_ocean') ? JSON.parse(localStorage.getItem('theme_ocean')) : false
     }
 };
 
@@ -65,6 +143,7 @@ const mainMenu = document.getElementById('mainMenu');
 const playButton = document.getElementById('playButton');
 const achievementsButton = document.getElementById('achievementsButton');
 const skinsButton = document.getElementById('skinsButton');
+const crystalsDisplay = document.getElementById('crystalsDisplay');
 
 // Игра
 const gameView = document.getElementById('gameView');
@@ -96,10 +175,14 @@ closeSkins.addEventListener('click', backToMenu);
 exitButton.addEventListener('click', backToMenu);
 
 // Обработчики для выбора скинов
-skinButtons.forEach((button, index) => {
-    button.addEventListener('click', (e) => {
-        e.stopPropagation();
-        selectSkin(index + 1);
+document.addEventListener('DOMContentLoaded', () => {
+    const updatedSkinButtons = document.querySelectorAll('.skin-button');
+    updatedSkinButtons.forEach((button) => {
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const themeId = button.dataset.theme;
+            handleThemeSelection(themeId);
+        });
     });
 });
 
@@ -118,6 +201,7 @@ function backToMenu() {
     mainMenu.style.display = 'flex';
     gameState.isRunning = false;
     gameOverScreen.style.display = 'none';
+    updateCrystalsDisplay();
 }
 
 function showAchievements() {
@@ -135,93 +219,169 @@ function showSkins() {
 // ========== ФУНКЦИИ ДОСТИЖЕНИЙ ==========
 function updateAchievementsDisplay() {
     const achievements = [
-        { id: 'ach1', score: 5 },
-        { id: 'ach2', score: 10 },
-        { id: 'ach3', score: 25 },
-        { id: 'ach4', score: 50 }
+        { id: 'ach1', score: 5, reward: 10 },
+        { id: 'ach2', score: 10, reward: 25 },
+        { id: 'ach3', score: 25, reward: 50 },
+        { id: 'ach4', score: 50, reward: 100 }
     ];
 
     achievements.forEach(ach => {
         const element = document.getElementById(ach.id);
+        const rewardElement = document.getElementById(ach.id + '-reward');
+        
         if (gameState.achievements[ach.id]) {
             element.textContent = 'Получено ✓';
             element.classList.add('unlocked');
             element.style.background = 'linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%)';
             element.style.color = 'white';
+            if (rewardElement) {
+                rewardElement.style.display = 'inline';
+            }
         } else {
             element.textContent = 'Заблокировано';
             element.classList.remove('unlocked');
+            if (rewardElement) {
+                rewardElement.style.display = 'none';
+            }
         }
     });
 }
 
 function checkAchievements() {
-    if (gameState.score >= 5 && !gameState.achievements.ach1) {
-        gameState.achievements.ach1 = true;
-        localStorage.setItem('ach1', JSON.stringify(true));
-    }
-    if (gameState.score >= 10 && !gameState.achievements.ach2) {
-        gameState.achievements.ach2 = true;
-        localStorage.setItem('ach2', JSON.stringify(true));
-    }
-    if (gameState.score >= 25 && !gameState.achievements.ach3) {
-        gameState.achievements.ach3 = true;
-        localStorage.setItem('ach3', JSON.stringify(true));
-    }
-    if (gameState.score >= 50 && !gameState.achievements.ach4) {
-        gameState.achievements.ach4 = true;
-        localStorage.setItem('ach4', JSON.stringify(true));
-    }
-}
-
-// ========== ФУНКЦИИ СКИНОВ ==========
-function updateSkinsDisplay() {
-    const skinItems = document.querySelectorAll('.skin-item');
-    skinItems.forEach((item, index) => {
-        if (index === 0) {
-            if (gameState.currentSkin === 'yellow') {
-                item.classList.add('selected');
-                item.querySelector('.skin-status').textContent = 'Активна';
-            } else {
-                item.classList.remove('selected');
-                item.querySelector('.skin-status').textContent = '';
-            }
-        } else {
-            item.classList.remove('selected');
+    Object.keys(ACHIEVEMENTS).forEach(achKey => {
+        const ach = ACHIEVEMENTS[achKey];
+        if (gameState.score >= ach.score && !gameState.achievements[achKey]) {
+            gameState.achievements[achKey] = true;
+            gameState.crystals += ach.reward;
+            localStorage.setItem(achKey, JSON.stringify(true));
+            localStorage.setItem('crystals', gameState.crystals);
+            
+            // Показываем уведомление о получении кристаллов
+            showCrystalsNotification(ach.reward);
         }
     });
 }
 
-function selectSkin(skinIndex) {
-    const skins = ['yellow', 'red', 'blue', 'purple'];
-    gameState.currentSkin = skins[skinIndex - 1];
-    localStorage.setItem('currentSkin', gameState.currentSkin);
+function showCrystalsNotification(amount) {
+    const notification = document.createElement('div');
+    notification.className = 'crystal-notification';
+    notification.textContent = `+${amount} 💎`;
+    notification.style.position = 'fixed';
+    notification.style.top = '50%';
+    notification.style.left = '50%';
+    notification.style.transform = 'translate(-50%, -50%)';
+    notification.style.fontSize = '2em';
+    notification.style.fontWeight = 'bold';
+    notification.style.color = '#FFD700';
+    notification.style.textShadow = '2px 2px 4px rgba(0,0,0,0.3)';
+    notification.style.zIndex = '2000';
+    notification.style.animation = 'floatUp 2s ease-out forwards';
     
-    // Обновляем UI
-    const skinItems = document.querySelectorAll('.skin-item');
-    skinItems.forEach((item, index) => {
-        if (index === skinIndex - 1) {
-            item.classList.add('selected');
-            const statusElement = item.querySelector('.skin-status');
-            if (statusElement) {
-                statusElement.textContent = 'Активна';
-            } else {
-                const info = item.querySelector('.skin-info');
-                const status = document.createElement('p');
-                status.className = 'skin-status';
-                status.textContent = 'Активна';
-                info.appendChild(status);
-            }
-            const button = item.querySelector('.skin-button');
-            if (button) button.style.display = 'none';
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 2000);
+}
+
+// ========== ФУНКЦИИ ТЕМА И СКИНОВ ==========
+function updateSkinsDisplay() {
+    const skinsContainer = document.getElementById('skinsContainer');
+    if (!skinsContainer) return;
+    
+    skinsContainer.innerHTML = '';
+    
+    Object.keys(THEMES).forEach(themeId => {
+        const theme = THEMES[themeId];
+        const isUnlocked = gameState.unlockedThemes[themeId];
+        const isSelected = gameState.currentTheme === themeId;
+        
+        const skinItem = document.createElement('div');
+        skinItem.className = `skin-item ${isSelected ? 'selected' : ''}`;
+        
+        let previewEmoji = '🐤';
+        if (themeId === 'desert') previewEmoji = '🏜️';
+        else if (themeId === 'jungle') previewEmoji = '🌴';
+        else if (themeId === 'ocean') previewEmoji = '🌊';
+        
+        let content = `
+            <div class="skin-preview">
+                ${previewEmoji}
+            </div>
+            <div class="skin-info">
+                <h3>${theme.name}</h3>
+        `;
+        
+        if (isSelected) {
+            content += '<p class="skin-status">Активна ✓</p>';
+        } else if (isUnlocked) {
+            content += `<button class="skin-button" data-theme="${themeId}">Выбрать</button>`;
         } else {
-            item.classList.remove('selected');
-            const statusElement = item.querySelector('.skin-status');
-            if (statusElement) statusElement.remove();
-            const button = item.querySelector('.skin-button');
-            if (button) button.style.display = 'block';
+            content += `<button class="skin-button skin-buy-button" data-theme="${themeId}">Купить за ${theme.cost} 💎</button>`;
         }
+        
+        content += '</div>';
+        skinItem.innerHTML = content;
+        skinsContainer.appendChild(skinItem);
     });
+    
+    // Переподключаем обработчики событий
+    document.querySelectorAll('.skin-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const themeId = button.dataset.theme;
+            handleThemeSelection(themeId);
+        });
+    });
+}
+
+function handleThemeSelection(themeId) {
+    const theme = THEMES[themeId];
+    const isUnlocked = gameState.unlockedThemes[themeId];
+    
+    if (!isUnlocked) {
+        // Покупаем тему
+        if (gameState.crystals >= theme.cost) {
+            gameState.crystals -= theme.cost;
+            gameState.unlockedThemes[themeId] = true;
+            localStorage.setItem('crystals', gameState.crystals);
+            localStorage.setItem(`theme_${themeId}`, JSON.stringify(true));
+            
+            // Показываем уведомление
+            showNotification(`Тема "${theme.name}" разблокирована!`);
+            updateSkinsDisplay();
+        } else {
+            showNotification(`Недостаточно кристаллов! Нужно ${theme.cost}, а у вас ${gameState.crystals}`);
+        }
+    } else {
+        // Выбираем активную тему
+        gameState.currentTheme = themeId;
+        gameState.currentSkin = themeId;
+        localStorage.setItem('currentSkin', themeId);
+        localStorage.setItem('currentTheme', themeId);
+        updateSkinsDisplay();
+    }
+}
+
+function updateCrystalsDisplay() {
+    if (crystalsDisplay) {
+        crystalsDisplay.textContent = gameState.crystals;
+    }
+}
+
+function showNotification(message) {
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.style.position = 'fixed';
+    notification.style.top = '20px';
+    notification.style.left = '50%';
+    notification.style.transform = 'translateX(-50%)';
+    notification.style.background = 'rgba(0, 0, 0, 0.8)';
+    notification.style.color = 'white';
+    notification.style.padding = '15px 25px';
+    notification.style.borderRadius = '5px';
+    notification.style.zIndex = '2000';
+    notification.style.fontSize = '0.9em';
+    notification.style.maxWidth = '90%';
+    document.body.appendChild(notification);
+    setTimeout(() => notification.remove(), 3000);
 }
 
 // ========== СОБЫТИЯ УПРАВЛЕНИЯ ИГРОЙ ==========
@@ -427,7 +587,7 @@ function updateScore() {
                     localStorage.setItem('maxScore', gameState.maxScore);
                 }
                 
-                // TODO: Ин��еграция с Яндекс Играми
+                // TODO: Интеграция с Яндекс Играми
                 // window.YaGame.submitScore(gameState.score);
             }
         }
@@ -442,24 +602,42 @@ function draw() {
     // Очистка canvas
     ctx.clearRect(0, 0, CONFIG.canvasWidth, CONFIG.canvasHeight);
     
+    // Получаем текущую тему
+    const theme = THEMES[gameState.currentTheme] || THEMES.yellow;
+    
     // Рисование фона (небо)
     const gradient = ctx.createLinearGradient(0, 0, 0, CONFIG.canvasHeight - CONFIG.groundHeight);
-    gradient.addColorStop(0, '#87CEEB');
-    gradient.addColorStop(1, '#E0F6FF');
+    gradient.addColorStop(0, theme.sky);
+    gradient.addColorStop(1, adjustBrightness(theme.sky, -20));
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, CONFIG.canvasWidth, CONFIG.canvasHeight - CONFIG.groundHeight);
     
-    // Рисование облаков
-    drawClouds();
+    // Рисование облаков/деталей в зависимости от темы
+    drawThemeDetails(theme);
     
     // Рисование земли
-    drawGround();
+    drawGround(theme);
     
     // Рисование птицы
     drawBird();
     
     // Рисование труб
-    drawPipes();
+    drawPipes(theme);
+}
+
+/**
+ * Рисование деталей в зависимости от темы
+ */
+function drawThemeDetails(theme) {
+    if (gameState.currentTheme === 'desert') {
+        drawDesertDetails();
+    } else if (gameState.currentTheme === 'jungle') {
+        drawJungleDetails();
+    } else if (gameState.currentTheme === 'ocean') {
+        drawOceanDetails();
+    } else {
+        drawClouds();
+    }
 }
 
 /**
@@ -471,6 +649,85 @@ function drawClouds() {
     
     drawCloud(80, cloudY1, 30);
     drawCloud(320, cloudY2, 35);
+}
+
+/**
+ * Рисование деталей пустыни
+ */
+function drawDesertDetails() {
+    // Солнце
+    ctx.fillStyle = 'rgba(255, 200, 0, 0.8)';
+    ctx.beginPath();
+    ctx.arc(350, 50, 40, 0, Math.PI * 2);
+    ctx.fill();
+    
+    // Дюны
+    ctx.fillStyle = 'rgba(210, 180, 100, 0.3)';
+    ctx.beginPath();
+    ctx.arc(100, 300, 80, 0, Math.PI);
+    ctx.fill();
+    
+    ctx.beginPath();
+    ctx.arc(300, 350, 100, 0, Math.PI);
+    ctx.fill();
+}
+
+/**
+ * Рисование деталей джунглей
+ */
+function drawJungleDetails() {
+    // Деревья слева
+    ctx.fillStyle = 'rgba(34, 139, 34, 0.5)';
+    for (let i = 0; i < 3; i++) {
+        ctx.beginPath();
+        ctx.arc(30 + i * 80, 200 + i * 30, 60, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    
+    // Деревья справа
+    for (let i = 0; i < 3; i++) {
+        ctx.beginPath();
+        ctx.arc(350 - i * 80, 150 + i * 40, 50, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    
+    // Листья летящие
+    ctx.fillStyle = 'rgba(0, 200, 0, 0.4)';
+    const leafY = 100 + Math.sin(gameState.frameCount * 0.02) * 50;
+    ctx.beginPath();
+    ctx.arc(200 + Math.cos(gameState.frameCount * 0.01) * 50, leafY, 8, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+/**
+ * Рисование деталей моря
+ */
+function drawOceanDetails() {
+    // Волны
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.lineWidth = 2;
+    
+    for (let i = 0; i < 3; i++) {
+        const waveY = 100 + i * 80;
+        ctx.beginPath();
+        for (let x = 0; x < CONFIG.canvasWidth; x += 20) {
+            const y = waveY + Math.sin((x + gameState.frameCount * 2) / 20) * 15;
+            if (x === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+        }
+        ctx.stroke();
+    }
+    
+    // Рыбка
+    ctx.fillStyle = 'rgba(255, 165, 0, 0.5)';
+    const fishX = 100 + Math.sin(gameState.frameCount * 0.01) * 50;
+    const fishY = 250;
+    ctx.beginPath();
+    ctx.arc(fishX, fishY, 15, 0, Math.PI * 2);
+    ctx.fill();
 }
 
 /**
@@ -488,13 +745,13 @@ function drawCloud(x, y, size) {
 /**
  * Рисование земли
  */
-function drawGround() {
-    // Трава
-    ctx.fillStyle = '#2d8659';
+function drawGround(theme) {
+    // Земля/песок/вода
+    ctx.fillStyle = theme.ground;
     ctx.fillRect(0, CONFIG.canvasHeight - CONFIG.groundHeight, CONFIG.canvasWidth, CONFIG.groundHeight);
     
     // Линия земли
-    ctx.strokeStyle = '#1a5033';
+    ctx.strokeStyle = theme.groundLine;
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(0, CONFIG.canvasHeight - CONFIG.groundHeight);
@@ -527,7 +784,7 @@ function drawBird() {
             wingColor = '#7700DD';
             beakColor = '#CC88FF';
             break;
-        default: // yellow
+        default: // yellow и темы
             bodyColor = '#FFD700';
             wingColor = '#FFA500';
             beakColor = '#FF6B6B';
@@ -573,19 +830,33 @@ function drawBird() {
 /**
  * Рисование труб
  */
-function drawPipes() {
+function drawPipes(theme) {
     for (let pipe of gameState.pipes) {
         // Цвет трубы
-        ctx.fillStyle = '#2d8659';
+        ctx.fillStyle = theme.ground;
         
         // Рисование трубы
         ctx.fillRect(pipe.x, pipe.y, CONFIG.pipes.width, pipe.height);
         
         // Кант трубы
-        ctx.strokeStyle = '#1a5033';
+        ctx.strokeStyle = theme.groundLine;
         ctx.lineWidth = 3;
         ctx.strokeRect(pipe.x, pipe.y, CONFIG.pipes.width, pipe.height);
     }
+}
+
+/**
+ * Вспомогательная функция для изменения яркости цвета
+ */
+function adjustBrightness(color, percent) {
+    const num = parseInt(color.replace("#",""), 16);
+    const amt = Math.round(2.55 * percent);
+    const R = (num >> 16) + amt;
+    const G = (num >> 8 & 0x00FF) + amt;
+    const B = (num & 0x0000FF) + amt;
+    return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 +
+        (G<255?G<1?0:G:255)*0x100 + (B<255?B<1?0:B:255))
+        .toString(16).slice(1);
 }
 
 // ========== УПРАВЛЕНИЕ ИГРОЙ ==========
@@ -629,8 +900,11 @@ function resetGame() {
         frameCount: 0,
         lastPipeDistance: CONFIG.pipes.distance - 100,
         currentSkin: localStorage.getItem('currentSkin') || 'yellow',
+        currentTheme: localStorage.getItem('currentTheme') || 'yellow',
         maxScore: gameState.maxScore,
-        achievements: gameState.achievements
+        crystals: gameState.crystals,
+        achievements: gameState.achievements,
+        unlockedThemes: gameState.unlockedThemes
     };
     
     scoreDisplay.textContent = '0';
@@ -670,9 +944,16 @@ function init() {
     
     // Загружаем сохраненный скин
     const savedSkin = localStorage.getItem('currentSkin');
+    const savedTheme = localStorage.getItem('currentTheme');
     if (savedSkin) {
         gameState.currentSkin = savedSkin;
     }
+    if (savedTheme) {
+        gameState.currentTheme = savedTheme;
+    }
+    
+    // Обновляем дисплей кристаллов
+    updateCrystalsDisplay();
     
     // Начинаем игровой цикл
     requestAnimationFrame(gameLoop);
