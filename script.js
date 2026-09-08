@@ -66,6 +66,14 @@ document.addEventListener('touchstart', handleFlap);
 canvas.addEventListener('click', handleFlap);
 canvas.addEventListener('touchstart', handleFlap);
 
+// Управление клавиатурой (пробел)
+document.addEventListener('keydown', function(event) {
+    if (event.code === 'Space') {
+        event.preventDefault();
+        handleFlap();
+    }
+});
+
 // Кнопка "Играть снова"
 restartButton.addEventListener('click', restartGame);
 
@@ -73,7 +81,9 @@ restartButton.addEventListener('click', restartGame);
  * Обработчик прыжка птицы
  */
 function handleFlap(e) {
-    e.preventDefault();
+    if (e) {
+        e.preventDefault();
+    }
     
     if (gameState.gameOver) {
         return; // Игра закончена, ждем перезапуска
