@@ -14,7 +14,7 @@ const CONFIG = {
         y: 150,
         width: 30,
         height: 24,
-        gravity: 0.6,
+        gravity: 0.3,
         jumpPower: -12,
         maxFallSpeed: 12
     },
@@ -22,8 +22,8 @@ const CONFIG = {
     // Параметры препятствий
     pipes: {
         width: 50,
-        gap: 120,
-        distance: 200,
+        gap: 150,
+        distance: 300,
         speed: 5,
         minHeight: 50,
         maxHeight: 300
@@ -442,7 +442,7 @@ function gameLoop(currentTime) {
     // Увеличение счетчика кадров
     gameState.frameCount++;
     
-    // Запрос следующего кадра
+    // За��рос следующего кадра
     requestAnimationFrame(gameLoop);
 }
 
