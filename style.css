@@ -528,6 +528,21 @@ body {
     background: #f0e5ff;
 }
 
+.fire {
+    background: linear-gradient(135deg, #FF6B00 0%, #FF2200 100%);
+    box-shadow: 0 0 10px rgba(255, 107, 0, 0.5);
+    animation: firePulse 1.5s ease-in-out infinite;
+}
+
+@keyframes firePulse {
+    0%, 100% {
+        box-shadow: 0 0 10px rgba(255, 107, 0, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(255, 107, 0, 0.8);
+    }
+}
+
 .desert {
     background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
 }
@@ -582,6 +597,10 @@ body {
 
 .skin-buy-button:hover {
     box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
+}
+
+.skin-item.selected .skin-buy-button {
+    background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
 }
 
 /* ========== УВЕДОМЛЕНИЯ ========== */
