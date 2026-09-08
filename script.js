@@ -38,59 +38,84 @@ const CONFIG = {
 const THEMES = {
     yellow: {
         name: 'Жёлтая птица',
+        type: 'skin',
         cost: 0,
         unlocked: true,
         sky: '#87CEEB',
         ground: '#2d8659',
-        groundLine: '#1a5033'
+        groundLine: '#1a5033',
+        hasTrail: false
     },
     red: {
         name: 'Красная птица',
+        type: 'skin',
         cost: 0,
         unlocked: true,
         sky: '#87CEEB',
         ground: '#2d8659',
-        groundLine: '#1a5033'
+        groundLine: '#1a5033',
+        hasTrail: false
     },
     blue: {
         name: 'Голубая птица',
+        type: 'skin',
         cost: 0,
         unlocked: true,
         sky: '#87CEEB',
         ground: '#2d8659',
-        groundLine: '#1a5033'
+        groundLine: '#1a5033',
+        hasTrail: false
     },
     purple: {
         name: 'Фиолетовая птица',
+        type: 'skin',
         cost: 0,
         unlocked: true,
         sky: '#87CEEB',
         ground: '#2d8659',
-        groundLine: '#1a5033'
+        groundLine: '#1a5033',
+        hasTrail: false
+    },
+    fire: {
+        name: 'Огненная птица',
+        type: 'skin',
+        cost: 200,
+        unlocked: false,
+        sky: '#FF6B00',
+        ground: '#660000',
+        groundLine: '#330000',
+        hasTrail: true,
+        trailColor: '#FF4500'
     },
     desert: {
         name: 'Пустыня',
+        type: 'theme',
         cost: 50,
         unlocked: false,
         sky: '#FFD700',
         ground: '#D4A574',
-        groundLine: '#B8860B'
+        groundLine: '#B8860B',
+        hasTrail: false
     },
     jungle: {
         name: 'Джунгли',
+        type: 'theme',
         cost: 75,
         unlocked: false,
         sky: '#90EE90',
         ground: '#228B22',
-        groundLine: '#0B6623'
+        groundLine: '#0B6623',
+        hasTrail: false
     },
     ocean: {
         name: 'Море',
+        type: 'theme',
         cost: 100,
         unlocked: false,
         sky: '#4A90E2',
         ground: '#1E90FF',
-        groundLine: '#000080'
+        groundLine: '#000080',
+        hasTrail: false
     }
 };
 
@@ -110,7 +135,8 @@ let gameState = {
     bird: {
         x: CONFIG.bird.x,
         y: CONFIG.bird.y,
-        velocityY: 0
+        velocityY: 0,
+        trail: []
     },
     pipes: [],
     nextPipeId: 0,
@@ -131,6 +157,7 @@ let gameState = {
         red: true,
         blue: true,
         purple: true,
+        fire: localStorage.getItem('theme_fire') ? JSON.parse(localStorage.getItem('theme_fire')) : false,
         desert: localStorage.getItem('theme_desert') ? JSON.parse(localStorage.getItem('theme_desert')) : false,
         jungle: localStorage.getItem('theme_jungle') ? JSON.parse(localStorage.getItem('theme_jungle')) : false,
         ocean: localStorage.getItem('theme_ocean') ? JSON.parse(localStorage.getItem('theme_ocean')) : false
@@ -291,13 +318,17 @@ function updateSkinsDisplay() {
     Object.keys(THEMES).forEach(themeId => {
         const theme = THEMES[themeId];
         const isUnlocked = gameState.unlockedThemes[themeId];
-        const isSelected = gameState.currentTheme === themeId;
+        const isSelected = gameState.currentSkin === themeId;
         
         const skinItem = document.createElement('div');
         skinItem.className = `skin-item ${isSelected ? 'selected' : ''}`;
         
         let previewEmoji = '🐤';
-        if (themeId === 'desert') previewEmoji = '🏜️';
+        if (themeId === 'red') previewEmoji = '🔴';
+        else if (themeId === 'blue') previewEmoji = '🔵';
+        else if (themeId === 'purple') previewEmoji = '🟣';
+        else if (themeId === 'fire') previewEmoji = '🔥';
+        else if (themeId === 'desert') previewEmoji = '🏜️';
         else if (themeId === 'jungle') previewEmoji = '🌴';
         else if (themeId === 'ocean') previewEmoji = '🌊';
         
@@ -347,13 +378,14 @@ function handleThemeSelection(themeId) {
             // Показываем уведомление
             showNotification(`Тема "${theme.name}" разблокирована!`);
             updateSkinsDisplay();
+            updateCrystalsDisplay();
         } else {
             showNotification(`Недостаточно кристаллов! Нужно ${theme.cost}, а у вас ${gameState.crystals}`);
         }
     } else {
-        // Выбираем активную тему
-        gameState.currentTheme = themeId;
+        // Выбираем активную тему/скин
         gameState.currentSkin = themeId;
+        gameState.currentTheme = themeId;
         localStorage.setItem('currentSkin', themeId);
         localStorage.setItem('currentTheme', themeId);
         updateSkinsDisplay();
@@ -471,6 +503,24 @@ function updateBird() {
     
     // Обновление позиции
     gameState.bird.y += gameState.bird.velocityY;
+    
+    // Добавляем след для огненной птицы
+    const theme = THEMES[gameState.currentTheme];
+    if (theme && theme.hasTrail) {
+        gameState.bird.trail.push({
+            x: gameState.bird.x,
+            y: gameState.bird.y,
+            age: 0
+        });
+        
+        // Очищаем старый след
+        gameState.bird.trail = gameState.bird.trail.filter(point => {
+            point.age++;
+            return point.age < 10;
+        });
+    } else {
+        gameState.bird.trail = [];
+    }
 }
 
 /**
@@ -635,6 +685,8 @@ function drawThemeDetails(theme) {
         drawJungleDetails();
     } else if (gameState.currentTheme === 'ocean') {
         drawOceanDetails();
+    } else if (gameState.currentTheme === 'fire') {
+        drawFireDetails();
     } else {
         drawClouds();
     }
@@ -731,6 +783,31 @@ function drawOceanDetails() {
 }
 
 /**
+ * Рисование деталей огня
+ */
+function drawFireDetails() {
+    // Огневые частицы/языки пламени
+    ctx.fillStyle = 'rgba(255, 100, 0, 0.4)';
+    for (let i = 0; i < 3; i++) {
+        const flameX = 50 + Math.sin(gameState.frameCount * 0.02 + i) * 30;
+        const flameY = 100 + i * 80 + Math.cos(gameState.frameCount * 0.01 + i) * 20;
+        ctx.beginPath();
+        ctx.arc(flameX, flameY, 30 + Math.sin(gameState.frameCount * 0.03 + i) * 10, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    
+    // Дополнительные языки пламени
+    ctx.fillStyle = 'rgba(255, 200, 0, 0.3)';
+    for (let i = 0; i < 2; i++) {
+        const flameX = 350 - Math.cos(gameState.frameCount * 0.02 + i) * 30;
+        const flameY = 150 + i * 100 + Math.sin(gameState.frameCount * 0.01 + i) * 25;
+        ctx.beginPath();
+        ctx.arc(flameX, flameY, 25 + Math.cos(gameState.frameCount * 0.03 + i) * 8, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
+/**
  * Вспомогательная функция рисования облака
  */
 function drawCloud(x, y, size) {
@@ -764,6 +841,19 @@ function drawGround(theme) {
  */
 function drawBird() {
     const bird = gameState.bird;
+    const theme = THEMES[gameState.currentTheme];
+    
+    // Рисование следа для огненной птицы
+    if (theme && theme.hasTrail && gameState.bird.trail.length > 0) {
+        for (let i = 0; i < gameState.bird.trail.length; i++) {
+            const point = gameState.bird.trail[i];
+            const opacity = (1 - point.age / 10) * 0.6;
+            ctx.fillStyle = `rgba(255, 69, 0, ${opacity})`;
+            ctx.beginPath();
+            ctx.arc(point.x + CONFIG.bird.width / 2, point.y + CONFIG.bird.height / 2, 6 - point.age / 2, 0, Math.PI * 2);
+            ctx.fill();
+        }
+    }
     
     // Выбор цвета в зависимости от скина
     let bodyColor, wingColor, beakColor;
@@ -783,6 +873,11 @@ function drawBird() {
             bodyColor = '#AA44FF';
             wingColor = '#7700DD';
             beakColor = '#CC88FF';
+            break;
+        case 'fire':
+            bodyColor = '#FF2200';
+            wingColor = '#CC0000';
+            beakColor = '#FFAA00';
             break;
         default: // yellow и темы
             bodyColor = '#FFD700';
@@ -893,7 +988,8 @@ function resetGame() {
         bird: {
             x: CONFIG.bird.x,
             y: CONFIG.bird.y,
-            velocityY: 0
+            velocityY: 0,
+            trail: []
         },
         pipes: [],
         nextPipeId: 0,
