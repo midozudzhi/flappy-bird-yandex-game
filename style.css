@@ -28,6 +28,110 @@ body {
     padding: 20px;
     max-width: 500px;
     width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+/* ========== ГЛАВНОЕ МЕНЮ ========== */
+.main-menu {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 600px;
+    padding: 20px;
+}
+
+.menu-content {
+    text-align: center;
+    width: 100%;
+}
+
+.game-title {
+    font-size: 3.5em;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.game-subtitle {
+    font-size: 1.3em;
+    color: #666;
+    margin-bottom: 40px;
+    font-style: italic;
+}
+
+.menu-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.menu-button {
+    width: 100%;
+    max-width: 280px;
+    padding: 16px 30px;
+    font-size: 1.1em;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.button-icon {
+    font-size: 1.3em;
+}
+
+.play-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.play-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.achievements-button {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+}
+
+.achievements-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
+}
+
+.skins-button {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+}
+
+.skins-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(79, 172, 254, 0.6);
+}
+
+.menu-button:active {
+    transform: translateY(-1px);
+}
+
+/* ========== ИГРА ========== */
+.game-view {
+    width: 100%;
 }
 
 /* Заголовок */
@@ -35,6 +139,27 @@ body {
     width: 100%;
     text-align: center;
     margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: relative;
+}
+
+.back-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    transform: translateX(-2px);
+    opacity: 0.8;
 }
 
 .header h1 {
@@ -42,6 +167,7 @@ body {
     color: #333;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
     margin-bottom: 10px;
+    flex: 1;
 }
 
 /* Таблица очков */
@@ -128,6 +254,9 @@ body {
     text-align: center;
     box-shadow: 0 10px 50px rgba(0, 0, 0, 0.3);
     animation: slideDown 0.3s ease-out;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
 }
 
 @keyframes slideDown {
@@ -181,6 +310,210 @@ body {
     transform: translateY(0);
 }
 
+#exitButton {
+    background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+    width: 100%;
+}
+
+#exitButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
+}
+
+/* ========== ДОСТИЖЕНИЯ ========== */
+.achievements-view,
+.skins-view {
+    width: 100%;
+    max-height: 600px;
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ddd;
+    padding-bottom: 15px;
+}
+
+.modal-header h2 {
+    color: #333;
+    font-size: 1.8em;
+    flex: 1;
+}
+
+.close-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.close-button:hover {
+    transform: translateX(-2px);
+    opacity: 0.8;
+}
+
+.achievements-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    max-height: 500px;
+    padding-right: 5px;
+}
+
+.achievement-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: white;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.achievement-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.achievement-icon {
+    font-size: 2.5em;
+    min-width: 50px;
+    text-align: center;
+}
+
+.achievement-info {
+    flex: 1;
+}
+
+.achievement-info h3 {
+    color: #333;
+    margin-bottom: 5px;
+    font-size: 1.1em;
+}
+
+.achievement-info p {
+    color: #999;
+    font-size: 0.9em;
+}
+
+.achievement-status {
+    background: #f0f0f0;
+    color: #999;
+    padding: 8px 12px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    font-weight: bold;
+    text-align: center;
+    min-width: 100px;
+}
+
+.achievement-status.unlocked {
+    background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+    color: white;
+}
+
+/* ========== СКИНЫ ========== */
+.skins-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    overflow-y: auto;
+    max-height: 500px;
+    padding-right: 5px;
+}
+
+.skin-item {
+    background: white;
+    border: 2px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.skin-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+}
+
+.skin-item.selected {
+    border-color: #667eea;
+    background: #f8f9ff;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.skin-preview {
+    width: 60px;
+    height: 50px;
+    margin: 0 auto 10px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    background: #f0f0f0;
+}
+
+.yellow-bird {
+    background: #fff3cd;
+}
+
+.red-bird {
+    background: #ffe5e5;
+}
+
+.blue-bird {
+    background: #e5f3ff;
+}
+
+.purple-bird {
+    background: #f0e5ff;
+}
+
+.skin-info h3 {
+    color: #333;
+    margin-bottom: 5px;
+    font-size: 1.1em;
+}
+
+.skin-status {
+    color: #84fab0;
+    font-weight: bold;
+    font-size: 0.85em;
+    margin-bottom: 10px;
+}
+
+.skin-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.skin-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(102, 126, 234, 0.4);
+}
+
+.skin-button:active {
+    transform: translateY(0);
+}
+
 /* Адаптивный дизайн для мобильных устройств */
 @media (max-width: 600px) {
     .game-container {
@@ -188,8 +521,17 @@ body {
         border-radius: 8px;
     }
 
+    .game-title {
+        font-size: 2.5em;
+    }
+
+    .menu-button {
+        max-width: 100%;
+        padding: 14px 20px;
+    }
+
     .header h1 {
-        font-size: 2em;
+        font-size: 1.8em;
     }
 
     #gameCanvas {
@@ -204,9 +546,16 @@ body {
         font-size: 1.7em;
     }
 
-    .restart-button {
-        padding: 12px 30px;
-        font-size: 1em;
+    .modal-header {
+        gap: 10px;
+    }
+
+    .modal-header h2 {
+        font-size: 1.4em;
+    }
+
+    .skins-list {
+        grid-template-columns: 1fr;
     }
 
     .controls-text {
@@ -217,6 +566,16 @@ body {
 @media (max-width: 400px) {
     .game-container {
         padding: 10px;
+    }
+
+    .game-title {
+        font-size: 2em;
+        margin-bottom: 5px;
+    }
+
+    .game-subtitle {
+        font-size: 1em;
+        margin-bottom: 20px;
     }
 
     .header h1 {
@@ -247,5 +606,10 @@ body {
 
     .final-score {
         font-size: 1.1em;
+    }
+
+    .menu-button {
+        padding: 12px 15px;
+        font-size: 1em;
     }
 }
