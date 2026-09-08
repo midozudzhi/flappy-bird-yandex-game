@@ -61,10 +61,47 @@ body {
 .game-subtitle {
     font-size: 1.3em;
     color: #666;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     font-style: italic;
 }
 
+/* ========== ДИСПЛЕЙ КРИСТАЛЛОВ ========== */
+.crystals-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    padding: 12px 25px;
+    border-radius: 25px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.crystals-icon {
+    font-size: 1.5em;
+}
+
+.crystals-count {
+    color: #333;
+    font-weight: bold;
+    min-width: 40px;
+}
+
+.modal-crystals {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 215, 0, 0.1);
+    padding: 8px 15px;
+    border-radius: 15px;
+    font-weight: bold;
+    color: #FFD700;
+}
+
+/* ========== МЕНЮ КНОПКИ ========== */
 .menu-buttons {
     display: flex;
     flex-direction: column;
@@ -421,7 +458,17 @@ body {
     color: white;
 }
 
-/* ========== СКИНЫ ========== */
+.achievement-reward {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 5px;
+    font-size: 0.85em;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+/* ========== СКИНЫ И ТЕМЫ ========== */
 .skins-list {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
@@ -439,6 +486,7 @@ body {
     text-align: center;
     transition: all 0.3s ease;
     cursor: pointer;
+    position: relative;
 }
 
 .skin-item:hover {
@@ -480,6 +528,18 @@ body {
     background: #f0e5ff;
 }
 
+.desert {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+}
+
+.jungle {
+    background: linear-gradient(135deg, #90EE90 0%, #228B22 100%);
+}
+
+.ocean {
+    background: linear-gradient(135deg, #4A90E2 0%, #1E90FF 100%);
+}
+
 .skin-info h3 {
     color: #333;
     margin-bottom: 5px;
@@ -503,6 +563,7 @@ body {
     font-weight: bold;
     width: 100%;
     transition: all 0.3s ease;
+    font-size: 0.9em;
 }
 
 .skin-button:hover {
@@ -514,6 +575,31 @@ body {
     transform: translateY(0);
 }
 
+.skin-buy-button {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    font-size: 0.85em;
+}
+
+.skin-buy-button:hover {
+    box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
+}
+
+/* ========== УВЕДОМЛЕНИЯ ========== */
+.crystal-notification {
+    animation: floatUp 2s ease-out forwards;
+}
+
+@keyframes floatUp {
+    0% {
+        opacity: 1;
+        transform: translate(-50%, 0);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -100px);
+    }
+}
+
 /* Адаптивный дизайн для мобильных устройств */
 @media (max-width: 600px) {
     .game-container {
@@ -523,6 +609,11 @@ body {
 
     .game-title {
         font-size: 2.5em;
+    }
+
+    .crystals-bar {
+        margin-bottom: 20px;
+        padding: 10px 20px;
     }
 
     .menu-button {
@@ -575,7 +666,12 @@ body {
 
     .game-subtitle {
         font-size: 1em;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
+    }
+
+    .crystals-bar {
+        margin-bottom: 15px;
+        font-size: 1em;
     }
 
     .header h1 {
