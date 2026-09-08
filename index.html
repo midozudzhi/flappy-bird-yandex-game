@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flappy Bird - Яндекс Игры</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>Flappy Bird</h1>
+            <div class="score-board">
+                <div class="score">
+                    <span class="score-label">Очки:</span>
+                    <span class="score-value" id="score">0</span>
+                </div>
+            </div>
+        </div>
+        
+        <canvas id="gameCanvas" width="400" height="600"></canvas>
+        
+        <div class="controls">
+            <p class="controls-text">Кликните мышью или нажмите на экран для полета</p>
+        </div>
+        
+        <div class="game-over-screen" id="gameOverScreen" style="display: none;">
+            <div class="game-over-content">
+                <h2>Игра закончена</h2>
+                <p class="final-score">Финальный счет: <span id="finalScore">0</span></p>
+                <button class="restart-button" id="restartButton">Играть снова</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Яндекс Игры SDK (заглушка) -->
+    <script>
+        // TODO: Подключить реальный SDK при публикации в Яндекс Играх
+        window.YaGame = {
+            // Заглушка для сохранения данных
+            save: function(data) {
+                console.log('YaGame.save:', data);
+                localStorage.setItem('gameData', JSON.stringify(data));
+            },
+            // Заглушка для загрузки данных
+            load: function() {
+                console.log('YaGame.load');
+                return JSON.parse(localStorage.getItem('gameData') || '{}');
+            },
+            // Заглушка для показа рекламы
+            showAd: function(callback) {
+                console.log('YaGame.showAd');
+                callback && callback();
+            },
+            // Заглушка для отправки результата на лидерборд
+            submitScore: function(score) {
+                console.log('YaGame.submitScore:', score);
+            }
+        };
+    </script>
+
+    <script src="script.js"></script>
+</body>
+</html>
