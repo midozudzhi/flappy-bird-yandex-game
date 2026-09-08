@@ -14,8 +14,8 @@ const CONFIG = {
         y: 150,
         width: 30,
         height: 24,
-        gravity: 0.3,
-        jumpPower: -12,
+        gravity: 0.6,
+        jumpPower: -8,
         maxFallSpeed: 12
     },
     
@@ -442,7 +442,7 @@ function gameLoop(currentTime) {
     // Увеличение счетчика кадров
     gameState.frameCount++;
     
-    // За��рос следующего кадра
+    // Запрос следующего кадра
     requestAnimationFrame(gameLoop);
 }
 
